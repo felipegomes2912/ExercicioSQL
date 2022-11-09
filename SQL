@@ -1,0 +1,122 @@
+-- Criando a tabela departamento
+create table departamento
+(
+	idDepartamento integer primary key not null,
+	nome varchar(30) not null,
+	localizacao varchar(50) not null,
+	orcamento varchar(30) not null
+)
+
+-- Criando a tabela empregado
+create table empregado
+(
+	idEmpregado integer primary key not null,
+	nome varchar(30) not null, 
+	idGerente integer not null,
+	funcao varchar(30) not null,
+	idDepartamento integer foreign key (idDepartamento) references departamento (idDepartamento)
+	on delete no action not null,
+	dataAdmissao date not null,
+	salario integer null,
+	comissao integer null,
+)
+
+-- Alterando uma coluna da tabela
+alter table empregado
+alter column idGerente integer null
+
+-- Seleção de todos os campos da tabela departamento
+select *
+from departamento
+
+-- Seleção dos campos nome e a funcao (na tabela empregado) onde o id do departamento é maior que 3
+select empregado.nome as 'Nome do empregado', empregado.funcao as 'Função do empregado'
+from empregado
+where empregado.idDepartamento>3
+
+-- Seleção dos campos nome e a funcao (na tabela empregado) onde a função é gerente
+select empregado.nome as 'Nome do empregado', empregado.funcao as 'Função do empregado'
+from empregado
+where empregado.funcao = 'gerente'
+
+-- Selecione todos os departamentos cujo orçamento mensal seja maior que 10000. e seu orçamento anual, que será obtido multiplicando-se o orçamento mensal por 12.
+select empregado.nome as 'Nome do empregado', 
+	empregado.funcao as 'Função do empregado',
+	departamento.orcamento*12 as 'Orçamento * 12'
+from departamento
+inner join empregado
+on departamento.orcamento>10000 and
+	departamento.idDepartamento = empregado.idDepartamento
+
+-- Todos os cargo existente porém sem duplicidade
+select distinct empregado.funcao as 'Cargo'
+from empregado
+inner join departamento
+on departamento.idDepartamento = empregado.idDepartamento
+
+-- Nome e função de cada funcionário na tabela empregado de A à Z
+select empregado.nome as 'Nome do empregado', empregado.funcao as 'Função do empregado'
+from empregado order by empregado.nome asc
+
+-- Nome e função de cada funcionário na tabela empregado de Z à A
+select empregado.nome as 'Nome do empregado', empregado.funcao as 'Função do empregado'
+from empregado order by empregado.nome desc
+
+-- Nome cujos salários sejam menores que 1000 ou maiores que 3500
+select empregado.nome as 'Nome do empregado', empregado.salario as 'Salário'
+from empregado
+where empregado.salario not between 1000 and 3500
+
+-- Nome cujo salário estão entre 3400 e 4000 e que sejam balconistas
+select empregado.nome as 'Nome do empregado', empregado.salario as 'Salário', empregado.funcao
+from empregado
+where empregado.salario between 3400 and 4000  and empregado.funcao = 'balconista'
+
+-- Nomes em minúsculo
+select lower(empregado.nome) as 'Nome do empregado'
+from empregado
+
+-- Nome de todos os empregados (somente as 5 primeiras letras)
+select substring(empregado.nome, 1, 5) as 'Nome do empregado'
+from empregado
+
+-- Média, maior, menor e somatória dos salários
+select avg(empregado.salario) as 'Média do salário',
+	max(empregado.salario) as 'Maior salário',
+	min(empregado.salario) as 'Menor salário',
+	sum(empregado.salario) as 'Somatório dos salários'
+from empregado
+
+--Média das comissões por departamento
+select empregado.idDepartamento as 'Departamento', avg(empregado.comissao) as 'Média da comissão'
+from empregado
+group by empregado.idDepartamento
+
+--Média das comissões por departamento com mais de dois empregados
+select empregado.idDepartamento as 'Departamento', avg(empregado.comissao) as 'Média da comissão'
+from empregado
+group by empregado.idDepartamento
+having count(*) > 2
+
+
+-- Inserindo dados na tabela departamento
+INSERT INTO departamento VALUES('1','Banco de Dados','Porto Alegre','2346');
+INSERT INTO departamento VALUES('2','Balconistas','Pelotas','10000');
+INSERT INTO departamento VALUES('3','Inteligência Artific','Pelotas','333');
+INSERT INTO departamento VALUES('4','Compiladores','Novo Hamburgo','5050');
+INSERT INTO departamento VALUES('5','Redes','Taquara','12122');
+
+-- Inserindo dados na tabela empregado
+INSERT INTO empregado VALUES('1','Mariewa',NULL,'Gerente','1','2000-04-05','2300',null);
+INSERT INTO empregado VALUES('2','Zico','1','Operário','1','1999-08-13','100',null);
+INSERT INTO empregado VALUES('4','Vera Fixer','5','Balconista','2','1999-05-05','3300',null);
+INSERT INTO empregado VALUES('3','Lula',NULL,'Presidente','5','1950-01-01','10000',null);
+INSERT INTO empregado VALUES('5','Luana Pyovany',NULL,'Gerente','2','1998-06-23','2300',null);
+INSERT INTO empregado VALUES('6','Daniela Schicarelli',NULL,'Gerente','3','1999-10-10','2300',null);
+INSERT INTO empregado VALUES('7','Luize Altenhofen',NULL,'Gerente','4','1999-04-26','2300',null);
+INSERT INTO empregado VALUES('8','Helo Pinheiro',NULL,'Gerente','5','1997-09-25','2300',null);
+INSERT INTO empregado VALUES('9','Pelé','1','Operário','1','2000-09-09','100',NULL);
+INSERT INTO empregado VALUES('10','Romário','1','Operário','5','2001-12-25','100',null);
+INSERT INTO empregado VALUES('11','Malu Mader','5','Balconista','2','2001-10-20','3400',null);
+INSERT INTO empregado VALUES('12','Antônio Fagundes','7','Vendedor','3','2002-12-22','5000','10');
+
